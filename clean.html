@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Literacy & Safety Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for font and form-radio/textarea focus */
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        /* Styling for radio buttons */
+        .form-radio {
+            appearance: none;
+            display: inline-block;
+            vertical-align: middle;
+            height: 1.25rem;
+            width: 1.25rem;
+            border-radius: 9999px;
+            border-width: 1px;
+            border-color: #D1D5DB; /* gray-300 */
+            background-color: #FFFFFF;
+            transition: all 0.15s ease-in-out;
+            cursor: pointer;
+        }
+        .form-radio:checked {
+            background-color: #3B82F6; /* Blue */
+            border-color: #3B82F6;
+        }
+        .form-radio:checked:after {
+            content: '';
+            display: block;
+            width: 0.5rem;
+            height: 0.5rem;
+            margin: 0.25rem;
+            border-radius: 9999px;
+            background: #FFFFFF;
+        }
+        .form-radio:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* Blue with opacity */
+        }
+
+        /* Custom Keyframes */
+        @keyframes pulsate { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } }
+        .animate-pulsate-subtle { animation: pulsate 2s infinite ease-in-out; }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+            50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+        }
+        .animate-bounce-subtle { animation: bounce 1.5s infinite; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-3px); }
+            40%, 80% { transform: translateX(3px); }
+        }
+        .animate-shake-subtle { animation: shake 0.5s ease-in-out infinite alternate; }
+
+        .svg-transition { transition: all 1s ease-in-out; }
+        .hidden-element { opacity: 0; transform: translateY(20px); pointer-events: none; }
+        .visible-element { opacity: 1; transform: translateY(0); pointer-events: all; }
+        
+        @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .animate-flash { animation: flash 1s infinite step-end; }
+        
+        /* Keyframe for the dramatic hack pulse (affects the container/border) */
+        @keyframes hackpulse {
+            0% { border-color: #F87171; box-shadow: 0 0 10px rgba(239, 68, 68, 0.8); }
+            50% { border-color: #EF4444; box-shadow: 0 0 30px rgba(239, 68, 68, 1); }
+            100% { border-color: #F87171; box-shadow: 0 0 10px rgba(239, 68, 68, 0.8); }
+        }
+        .animate-hack-pulse { animation: hackpulse 0.2s infinite; }
+
+        /* Specific styles for the person's head on hack */
+        .hacked-head {
+            fill: #B91C1C !important; /* Deep red on hack */
+            transform-origin: 200px 138px;
+            animation: headshake 0.2s infinite alternate;
+        }
+        @keyframes headshake {
+            0% { transform: rotate(-8deg); }
+            100% { transform: rotate(8deg); }
+        }
+
+        /* Data leakage animation for the path */
+        @keyframes dataLeak {
+            0% { stroke-dashoffset: 100; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        /* SVG Data Leak Path Styling */
+        .data-leak-path {
+            stroke-dasharray: 100;
+            animation: dataLeak 1.5s linear infinite;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-indigo-50 via-gray-100 to-blue-100 flex flex-col items-center p-4 sm:p-6 lg:p-8">
+
+    <!-- Header -->
+    <header class="w-full max-w-4xl bg-white p-6 rounded-3xl shadow-2xl mb-8 text-center border-b-4 border-indigo-500 transform hover:scale-[1.01] transition-transform duration-300">
+        <!-- WRAPPED TEXT IN SPAN -->
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-indigo-800 mb-2 drop-shadow-lg flex items-center justify-center">
+            <!-- Icon: Shield for safety -->
+            <svg class="w-10 h-10 mr-3 text-indigo-600 animate-bounce-subtle" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a8 8 0 00-8 8c0 3.866 2.515 7.234 6 8.485V10a2 2 0 012-2h4a2 2 0 012 2v8.485c3.485-1.251 6-4.619 6-8.485a8 8 0 00-8-8zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path></svg>
+            <span id="app-title-text">Digital Literacy & E-Safety Hub</span>
+        </h1>
+        <p id="tagline" class="text-xl sm:text-2xl text-gray-700 font-medium italic">
+            Navigating the internet confidently and securely
+        </p>
+
+        <!-- Language Selector -->
+        <div class="mt-6 flex justify-center items-center gap-2">
+            <label for="language-select" id="language-selector" class="text-gray-700 font-semibold text-lg">
+                Select Language:
+            </label>
+            <select
+                id="language-select"
+                class="p-2 border border-gray-300 rounded-xl shadow-md focus:ring-blue-500 focus:border-blue-500 text-base"
+                onchange="changeLanguage(this.value)"
+            >
+                <option value="en">English</option>
+                <option value="hi">हिन्दी</option>
+                <option value="te">తెలుగు</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8">
+
+        <!-- What is Digital Literacy? Section -->
+        <section class="bg-white p-8 rounded-3xl shadow-xl border-b-4 border-blue-500 md:col-span-2 transform hover:scale-[1.01] transition-transform duration-300">
+            <!-- WRAPPED TEXT IN SPAN -->
+            <h2 class="text-3xl sm:text-4xl font-bold text-blue-800 mb-6 flex items-center">
+                <!-- Icon: Lightbulb for knowledge -->
+                <svg class="w-9 h-9 mr-3 text-blue-600 animate-pulsate-subtle" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 10a1 1 0 011-1h1a1 1 0 110 2H10a1 1 0 01-1-1zm0 3a1 1 0 011-1h1a1 1 0 110 2H10a1 1 0 01-1-1z"></path></svg>
+                <span id="about-title">What is Digital Literacy?</span>
+            </h2>
+            <p id="about-content" class="text-gray-700 leading-relaxed text-lg mb-8">
+                <span class="font-bold">Digital literacy</span> transcends mere technical proficiency; it is the comprehensive capability required for thriving in the modern, connected world. It involves four key domains: 
+                <ol class="list-decimal list-inside ml-4 mt-2 space-y-2">
+                    <li><span class="font-semibold">Cognitive & Critical Skills:</span> The ability to find, evaluate, synthesize, and critically assess digital information for <span class="font-semibold">reliability, bias, and authenticity (fact-checking)</span>. This is vital for navigating complex narratives and detecting misinformation.</li>
+                    <li><span class="font-semibold">Technical & Functional Skills:</span> Knowing how to effectively use hardware, software, and platforms, including essential skills like file management, cloud computing, and troubleshooting.</li>
+                    <li><span class="font-semibold">Creation and Communication:</span> Using digital tools to produce original content (reports, media), collaborate with others remotely, and communicate clearly, respectfully, and ethically in online spaces.</li>
+                    <li><span class="font-semibold">Safety and Citizenship:</span> Understanding digital rights, managing a positive online identity, and protecting oneself from cyber threats such as malware, phishing, and identity theft.</li>
+                </ol>
+                Mastering these interconnected skills is essential for maximizing <span class="font-bold">economic opportunity</span> and minimizing personal risk.
+            </p>
+
+            <h3 class="text-2xl sm:text-3xl font-bold text-teal-700 mb-6 flex items-center">
+                <!-- Icon: Checkmark/list for tips -->
+                <svg class="w-8 h-8 mr-2 text-teal-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                <span id="practical-tips-subtitle">Key E-Safety Practices</span>
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Tip 1: Passwords -->
+                <div class="bg-teal-50 p-5 rounded-xl border border-teal-200 shadow-md hover:shadow-lg transition-shadow transform hover:-translate-y-1">
+                    <h4 id="tip1-title" class="text-xl font-semibold text-teal-800 mb-2">Strong Passwords & Managers</h4>
+                    <p id="tip1-content" class="text-gray-700 text-base">Utilize passwords that are <span class="font-semibold">at least 12 characters long</span>, incorporating a mix of upper/lowercase letters, numbers, and symbols. Crucially, passwords must be <span class="font-semibold">unique for every account</span>. Employ a high-quality <span class="font-semibold">password manager</span> to handle this complexity safely.</p>
+                </div>
+                <!-- Tip 2: 2FA -->
+                <div class="bg-teal-50 p-5 rounded-xl border border-teal-200 shadow-md hover:shadow-lg transition-shadow transform hover:-translate-y-1">
+                    <h4 id="tip2-title" class="text-xl font-semibold text-teal-800 mb-2">Multi-Factor Authentication (MFA)</h4>
+                    <p id="tip2-content" class="text-gray-700 text-base">Always <span class="font-semibold">enable MFA</span> on all sensitive services (email, banking, cryptocurrency). This ensures that even if a criminal steals your password, they still need a second verification factor (like a code from your phone) to gain access, making the account exponentially more secure.</p>
+                </div>
+                <!-- Tip 3: Phishing -->
+                <div class="bg-teal-50 p-5 rounded-xl border border-teal-200 shadow-md hover:shadow-lg transition-shadow transform hover:-translate-y-1">
+                    <h4 id="tip3-title" class="text-xl font-semibold text-teal-800 mb-2">Hyperlink Verification (Phishing)</h4>
+                    <p id="tip3-content" class="text-gray-700 text-base">Before clicking any link in a suspicious email or text, <span class="font-semibold">hover your mouse over it</span> to view the destination URL. Check for misspellings or domains that do not match the expected sender. Never act on messages that create undue <span class="font-semibold">urgency or demand immediate action</span>.</p>
+                </div>
+                <!-- Tip 4: Updates -->
+                <div class="bg-teal-50 p-5 rounded-xl border border-teal-200 shadow-md hover:shadow-lg transition-shadow transform hover:-translate-y-1">
+                    <h4 id="tip4-title" class="text-xl font-semibold text-teal-800 mb-2">Software Patching and Updates</h4>
+                    <p id="tip4-content" class="text-gray-700 text-base">System and application updates are critical patches designed to close recently discovered <span class="font-semibold">security vulnerabilities</span>. Ensure all operating systems (OS), browsers, and installed applications are set to update automatically to prevent hackers from exploiting known flaws.</p>
+                </div>
+                <!-- Tip 5: Privacy Settings -->
+                <div class="bg-teal-50 p-5 rounded-xl border border-teal-200 shadow-md hover:shadow-lg transition-transform hover:-translate-y-1">
+                    <h4 id="tip5-title" class="text-xl font-semibold text-teal-800 mb-2">Granular Privacy Control</h4>
+                    <p id="tip5-content" class="text-gray-700 text-base">Regularly review the <span class="font-semibold">privacy settings</span> on social media platforms and mobile applications. Limit the audience for your posts, restrict location sharing, and minimize the amount of data accessible to third-party developers.</p>
+                </div>
+                <!-- Tip 6: Public Wi-Fi Caution -->
+                <div class="bg-teal-50 p-5 rounded-xl border border-teal-200 shadow-md hover:shadow-lg transition-shadow transform hover:-translate-y-1">
+                    <h4 id="tip6-title" class="text-xl font-semibold text-teal-800 mb-2">VPN Usage on Open Networks</h4>
+                    <p id="tip6-content" class="text-gray-700 text-base">Avoid performing <span class="font-semibold">sensitive transactions</span> (banking, payments, logins) on unsecured public Wi-Fi networks. If you must use public Wi-Fi, ensure you are connected via a <span class="font-semibold">Virtual Private Network (VPN)</span> to encrypt your traffic and prevent eavesdropping.</p>
+                </div>
+                <!-- Tip 7: Critical Thinking -->
+                <div class="bg-teal-50 p-5 rounded-xl border border-teal-200 shadow-md hover:shadow-lg transition-shadow transform hover:-translate-y-1">
+                    <h4 id="tip7-title" class="text-xl font-semibold text-teal-800 mb-2">Verify Information (Fact-Checking)</h4>
+                    <p id="tip7-content" class="text-gray-700 text-base">Actively work to detect <span class="font-semibold">misinformation and fake news</span>. Cross-reference information across multiple, diverse, and reputable sources. Look beyond sensational headlines and always confirm the publisher’s credibility before sharing content.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Online Safety Matters Section -->
+        <section class="bg-white p-8 rounded-3xl shadow-xl border-b-4 border-purple-500 transform hover:scale-[1.01] transition-transform duration-300">
+            <!-- WRAPPED TEXT IN SPAN -->
+            <h2 class="text-3xl sm:text-4xl font-bold text-purple-800 mb-6 flex items-center">
+                <!-- Icon: Person in front of computer -->
+                <svg class="w-9 h-9 mr-3 text-purple-600 animate-pulsate-subtle" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18H4v-3a6 6 0 0112 0v3z"></path></svg>
+                <span id="why-matter-title">Why Online Safety is Paramount</span>
+            </h2>
+            <p id="why-matter-content" class="text-gray-700 leading-relaxed text-lg">
+                Online safety is fundamental to maintaining personal <span class="font-bold">digital wellness and resilience</span>. By taking proactive measures, we safeguard our most valuable assets. The benefits of strong digital defense include:
+                <ol class="list-decimal list-inside ml-4 mt-2 space-y-2">
+                    <li><span class="font-semibold">Preserving Financial Security:</span> Preventing unauthorized access to banking, investment, and payment platforms, ensuring your hard-earned assets remain protected from sophisticated cyber theft.</li>
+                    <li><span class="font-semibold">Maintaining Personal Integrity:</span> Protecting your public and private data from breaches, which is crucial for controlling your professional reputation and preventing identity misuse.</li>
+                    <li><span class="font-semibold">Enhancing Digital Freedom:</span> Reducing the anxiety and fear associated with online activities, allowing you to engage with digital tools, commerce, and communication confidently and productively.</li>
+                </ol>
+                Proactive safety measures transform the digital world from a risky environment into an <span class="font-bold">empowering and trustworthy space</span>.
+            </p>
+        </section>
+
+        <!-- Protecting Your Digital Footprint Section -->
+        <section class="bg-white p-8 rounded-3xl shadow-xl border-b-4 border-pink-500 transform hover:scale-[1.01] transition-transform duration-300">
+            <!-- WRAPPED TEXT IN SPAN -->
+            <h2 class="text-3xl sm:text-4xl font-bold text-pink-800 mb-6 flex items-center">
+                <!-- Icon: Fingerprint/Data flow -->
+                <svg class="w-9 h-9 mr-3 text-pink-600 animate-pulsate-subtle" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
+                <span id="sustainability-title">Managing Your Digital Footprint</span>
+            </h2>
+            <p id="sustainability-content-1" class="text-gray-700 leading-relaxed text-lg mb-4">
+                Your <span class="font-bold">digital footprint</span> is the permanent data trail left by your online activities, encompassing everything from social media interactions to location data collected passively by apps. It is categorized into the <span class="font-semibold">Passive Footprint</span> (data gathered without direct consent, such as browsing history and IP addresses) and the <span class="font-semibold">Active Footprint</span> (information you intentionally share, like posts and comments).
+            </p>
+            <p id="sustainability-content-2" class="text-gray-700 leading-relaxed text-lg">
+                Effective footprint management is a form of <span class="font-bold">long-term reputation control</span>. Strategies involve exercising caution before sharing, regularly auditing and deleting old, outdated, or potentially embarrassing content, and configuring all privacy settings to the highest necessary level. <span class="font-semibold">Assume all content is permanent</span> and searchable by future employers or institutions.
+            </p>
+        </section>
+
+        <!-- Common Online Threats Section -->
+        <section class="md:col-span-2 bg-white p-8 rounded-3xl shadow-xl border-b-4 border-red-500 transform hover:scale-[1.01] transition-transform duration-300">
+            <!-- WRAPPED TEXT IN SPAN -->
+            <h2 class="text-3xl sm:text-4xl font-bold text-red-800 mb-6 flex items-center justify-center text-center">
+                <!-- Icon: Danger sign/Alert -->
+                <svg class="w-9 h-9 mr-3 text-red-600 animate-shake-subtle" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                <span id="impact-conventional-title">Common Online Threats: A Deep Dive</span>
+            </h2>
+            <div class="space-y-6">
+                <div class="bg-red-50 p-4 rounded-xl border-l-4 border-red-400">
+                    <h3 class="text-xl font-semibold text-red-700 mb-2">Phishing and Social Engineering</h3>
+                    <p id="impact-conventional-content-1" class="text-gray-700 leading-relaxed text-base">
+                        These are highly effective, non-technical attacks where criminals manipulate victims into performing an action (clicking a link, sharing credentials). Phishing emails often exploit <span class="font-semibold">human emotions</span> such as greed (fake prize) or fear (account suspension notice). <span class="font-semibold">Vigilant scrutiny</span> of the sender’s address and tone is your primary defense.
+                    </p>
+                </div>
+                <div class="bg-red-50 p-4 rounded-xl border-l-4 border-red-400">
+                    <h3 class="text-xl font-semibold text-red-700 mb-2">Malware and Ransomware Attacks</h3>
+                    <p id="impact-conventional-content-2" class="text-gray-700 leading-relaxed text-base">
+                        <span class="font-semibold">Malware</span> is umbrella term for malicious software intended to damage or disable a system. A dangerous subset is <span class="font-semibold">Ransomware</span>, which encrypts your crucial files or entire system, demanding a payment (often in cryptocurrency) for the decryption key. Protection relies on consistent software updates, reputable antivirus protection, and <span class="font-semibold">frequent, disconnected data backups</span>.
+                    </p>
+                </div>
+                <div class="bg-red-50 p-4 rounded-xl border-l-4 border-red-400">
+                    <h3 class="text-xl font-semibold text-red-700 mb-2">Identity Theft and Data Breaches</h3>
+                    <p id="impact-conventional-content-3" class="text-gray-700 leading-relaxed text-base">
+                        <span class="font-semibold">Identity theft</span> is facilitated by <span class="font-semibold">Data Breaches</span>, where large volumes of consumer data (PII: personal identifying information) are stolen from corporate servers. Using the same password across multiple sites ensures that a breach at one service compromises all your accounts. <span class="font-semibold">Unique passwords</span> and <span class="font-semibold">credit monitoring</span> are essential mitigations.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Digital Safety Visualizer (THE WOW FACTOR) -->
+        <section class="md:col-span-2 bg-white p-8 rounded-3xl shadow-xl border-4 border-yellow-500 flex flex-col items-center justify-center transform hover:scale-[1.01] transition-transform duration-300">
+            <!-- WRAPPED TEXT IN SPAN -->
+            <h2 class="text-3xl sm:text-4xl font-bold text-yellow-800 mb-6 flex items-center justify-center text-center">
+                <!-- Icon: Toggle switch -->
+                <svg class="w-9 h-9 mr-3 text-yellow-600 animate-pulsate-subtle" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.3-.85-3.04.34-2.5 1.76a1.532 1.532 0 01-.582 2.286c-1.56.38-1.56 2.6 0 2.98a1.532 1.532 0 01.582 2.286c-.54 1.42 1.2 2.61 2.5 1.76a1.532 1.532 0 012.286.948c.38 1.56 2.6 1.56 2.98 0a1.532 1.532 0 012.286-.948c1.3.85 3.04-.34 2.5-1.76a1.532 1.532 0 01.582-2.286c1.56-.38 1.56-2.6 0-2.98a1.532 1.532 0 01-.582-2.286c.54-1.42-1.2-2.61-2.5-1.76a1.532 1.532 0 01-2.286-.948zM10 9a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path></svg>
+                <span id="visualizer-title">Visualize the Phishing Trap</span>
+            </h2>
+            <p id="visualizer-instruction" class="text-gray-700 text-lg mb-6 text-center">
+                Watch the scenario: Observe what happens when you <span class="font-bold">click the tempting link</span>!
+            </p>
+            <div id="visualizer-container" class="relative w-full max-w-lg h-64 sm:h-80 bg-gray-50 rounded-xl overflow-hidden mb-6 shadow-inner border border-gray-300">
+                <svg viewBox="0 0 400 250" class="absolute inset-0 w-full h-full">
+                    
+                    <!-- Base element: Phone/Screen on Stand -->
+                    <rect x="250" y="50" width="100" height="150" rx="10" fill="#2D3748" class="shadow-lg"></rect>
+                    
+                    <!-- Person (Detailed) -->
+                    <g id="person-figure">
+                        <!-- Body -->
+                        <path d="M180 200 Q 200 160 220 200 L 220 200 Z" fill="#3B82F6" stroke="#1D4ED8" stroke-width="2"></path>
+                        <rect x="180" y="160" width="40" height="40" rx="5" fill="#3B82F6"></rect>
+                        <!-- Arm/Hand pointing (Dynamic - Unsafe state points, Hacked state drops) -->
+                        <g id="person-arm" class="svg-transition">
+                            <line x1="220" y1="165" x2="250" y2="100" stroke="#92400E" stroke-width="3" stroke-linecap="round"></line>
+                            <circle cx="250" cy="100" r="3" fill="#92400E" id="hand-circle"></circle>
+                        </g>
+
+                        <!-- Dynamic Head Group (Changes color, position, expression) -->
+                        <g id="person-dynamic-head">
+                            <!-- Head -->
+                            <circle id="dynamic-head" cx="200" cy="138" r="15" fill="#FCD34D" stroke="#92400E" stroke-width="2" class="svg-transition"></circle>
+                            <!-- Eyes (Simple dot eyes) -->
+                            <circle id="dynamic-eye-l" cx="195" cy="135" r="1.5" fill="#000000"></circle>
+                            <circle id="dynamic-eye-r" cx="205" cy="135" r="1.5" fill="#000000"></circle>
+                            <!-- Mouth (Neutral/Excited) -->
+                            <path id="dynamic-mouth" d="M195 145 Q 200 150 205 145" stroke="#000000" fill="none" stroke-width="1.5"></path>
+                        </g>
+                    </g>
+                    
+                    <!-- HACKED SCENE ELEMENTS (Initially hidden/transparent) -->
+                    <g id="secure-scene" class="hidden-element svg-transition">
+                        <!-- Data Leakage Path 1 (Starts from phone, goes into the void) -->
+                        <path id="data-leak-1" d="M300 200 L 250 150 L 150 150" stroke="#EF4444" stroke-width="3" fill="none" class="data-leak-path"></path>
+                        <path id="data-leak-2" d="M300 200 Q 380 100 450 150" stroke="#FF0000" stroke-width="3" fill="none" class="data-leak-path" style="animation-delay: 0.5s;"></path>
+                    </g>
+
+                    <!-- Pre-Click Scene (Tempting/Vulnerable State) -->
+                    <g id="unsafe-scene" class="visible-element svg-transition">
+                        <!-- Screen: Tempting Message -->
+                        <rect x="255" y="55" width="90" height="140" fill="#F8F8FF"></rect>
+                        <text x="300" y="85" font-family="Inter" font-size="7" fill="#10B981" text-anchor="middle" font-weight="bold">LUCKY DRAW WINNER!</text>
+                        <text x="300" y="125" font-family="Inter" font-size="16" fill="#FBBF24" text-anchor="middle" font-weight="extrabold" class="animate-flash">£1,000,000</text>
+                        <text x="300" y="145" font-family="Inter" font-size="8" fill="#374151" text-anchor="middle" font-weight="bold">Enter details in 5 mins!</text>
+
+                        <!-- Clickable Link Area (Large rectangle to simulate button) -->
+                        <rect x="260" y="160" width="80" height="30" rx="5" fill="#EF4444" cursor="pointer" class="animate-flash" onclick="toggleSafetyVisualizer()">
+                            <title>Phishing Link: Click to be Hacked</title>
+                        </rect>
+                        <text x="300" y="180" font-family="Inter" font-size="14" fill="#FFFFFF" text-anchor="middle" font-weight="bold" pointer-events="none">CLAIM NOW</text>
+                    </g>
+                    
+                    <!-- HACKED SCREEN OVERLAY -->
+                    <rect id="hacked-overlay" x="255" y="55" width="90" height="140" fill="#B91C1C" opacity="0" class="svg-transition pointer-events-none"></rect>
+                    <text id="hacked-text-main" x="300" y="100" font-family="Inter" font-size="20" fill="#FEE2E2" text-anchor="middle" font-weight="bold" opacity="0" class="svg-transition pointer-events-none">HACKED!</text>
+                    <text id="hacked-text-sub" x="300" y="130" font-family="Inter" font-size="8" fill="#FBBF24" text-anchor="middle" font-weight="bold" opacity="0" class="svg-transition pointer-events-none">DATA EXFILTRATION</text>
+                </svg>
+            </div>
+            <button
+                id="toggle-visualizer-btn"
+                onclick="toggleSafetyVisualizer()"
+                class="mt-4 px-8 py-4 rounded-full font-bold text-xl transition-all duration-300 transform hover:scale-105 active:scale-95
+                    bg-gradient-to-r from-yellow-500 to-amber-600 text-white shadow-xl hover:from-yellow-600 hover:to-amber-700"
+            >
+                Click the Link!
+            </button>
+        </section>
+
+
+        <!-- Share Your Safety Tip! Section -->
+        <section class="md:col-span-2 bg-white p-8 rounded-3xl shadow-xl border-b-4 border-lime-500 transform hover:scale-[1.01] transition-transform duration-300">
+            <!-- WRAPPED TEXT IN SPAN -->
+            <h2 class="text-3xl sm:text-4xl font-bold text-lime-800 mb-6 flex items-center">
+                <!-- Icon: Message/Chat bubble -->
+                <svg class="w-9 h-9 mr-3 text-lime-600 animate-pulsate-subtle" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a9.043 9.043 0 01-2.883-.414l-4.706.784a.5.5 0 01-.587-.665l.784-4.706A7.043 7.043 0 012 10c0-3.866 3.582-7 8-7s8 3.134 8 7z" clip-rule="evenodd"></path></svg>
+                <span id="share-idea-title">Share Your Digital Safety Tip!</span>
+            </h2>
+            <p id="share-idea-instruction" class="text-gray-700 italic text-lg mb-4">
+                Have a great tip for online safety or digital literacy? Share it with the community!
+            </p>
+            <form id="idea-form" class="space-y-4">
+                <div>
+                    <label for="idea-text" id="idea-label" class="block text-gray-800 font-semibold mb-2">Your Expert Tip:</label>
+                    <textarea
+                        id="idea-text"
+                        name="idea"
+                        rows="5"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500 text-lg"
+                        placeholder="e.g., Use unique passwords for social media and banking, and never save card info in the browser."
+                        required
+                    ></textarea>
+                </div>
+                <div class="flex items-center gap-4">
+                    <label for="idea-name" id="idea-name-label" class="text-gray-800 font-semibold">Your Name (Optional):</label>
+                    <input type="text" id="idea-name" name="name" class="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500 text-base" placeholder="Anonymous">
+                </div>
+                <button
+                    type="submit"
+                    id="submit-idea-btn"
+                    class="w-full px-8 py-4 rounded-full font-bold text-xl bg-lime-600 text-white shadow-xl hover:bg-lime-700 transition-colors transform hover:scale-105 active:scale-95"
+                >
+                    Submit Tip
+                </button>
+            </form>
+            <div id="submitted-ideas-container" class="mt-8 pt-6 border-t border-gray-200">
+                <h3 id="ideas-shared-title" class="text-2xl font-bold text-lime-700 mb-4">Tips Shared by the Community:</h3>
+                <ul id="ideas-list" class="space-y-4">
+                    <!-- Initial mock data -->
+                    <li class="bg-gray-50 p-4 rounded-xl shadow-sm border border-gray-200">
+                        <p class="text-gray-800 italic">"Always check the URL to make sure it starts with HTTPS before entering any private details." <span class="font-semibold text-gray-600">- Admin</span></p>
+                    </li>
+                    <li class="bg-gray-50 p-4 rounded-xl shadow-sm border border-gray-200">
+                        <p class="text-gray-800 italic">"Never share your OTP (One-Time Password) with anyone, even bank staff." <span class="font-semibold text-gray-600">- Admin</span></p>
+                    </li>
+                </ul>
+                <p id="no-ideas-yet" class="text-gray-600 italic mt-4 hidden">No tips shared yet. Be the first!</p>
+            </div>
+        </section>
+
+
+        <!-- Survey Box Section -->
+        <section class="md:col-span-2 bg-white p-8 rounded-3xl shadow-xl border-b-4 border-indigo-500 transform hover:scale-[1.01] transition-transform duration-300">
+            <!-- WRAPPED TEXT IN SPAN -->
+            <h2 class="text-3xl sm:text-4xl font-bold text-indigo-800 mb-6 flex items-center">
+                <!-- Icon: Clipboard for survey -->
+                <svg class="w-9 h-9 mr-3 text-indigo-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zM5 15a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                <span id="survey-title-text">Community Feedback Survey</span>
+            </h2>
+            <div id="survey-content-wrapper">
+                <form id="survey-form" class="space-y-6">
+                    <p id="survey-instructions" class="text-gray-700 italic text-lg mb-4">We value your input! Please take a moment to answer a few questions about this toolkit.</p>
+
+                    <!-- Name Field -->
+                    <div>
+                        <label for="name" id="survey-name-label" class="block text-gray-800 font-semibold mb-2">Your Name (Optional)</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-lg"
+                            placeholder="John Doe"
+                        />
+                    </div>
+
+                    <!-- Location Field -->
+                    <div>
+                        <label for="place" id="survey-place-label" class="block text-gray-800 font-semibold mb-2">Your City/Town (Optional)</label>
+                        <input
+                            type="text"
+                            id="place"
+                            name="place"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-lg"
+                            placeholder="Hyderabad"
+                        />
+                    </div>
+
+                    <!-- Helpfulness Question -->
+                    <div>
+                        <label id="survey-helpfulness-label" class="block text-gray-800 font-semibold mb-2">How helpful was this toolkit in increasing your awareness about online safety?</label>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <label class="inline-flex items-center">
+                                <input
+                                    type="radio"
+                                    name="helpfulness"
+                                    value="very_helpful"
+                                    class="form-radio text-indigo-600"
+                                    required
+                                />
+                                <span id="survey-helpful-option1" class="ml-2 text-gray-700">Very Helpful</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input
+                                    type="radio"
+                                    name="helpfulness"
+                                    value="somewhat_helpful"
+                                    class="form-radio text-indigo-600"
+                                />
+                                <span id="survey-helpful-option2" class="ml-2 text-gray-700">Somewhat Helpful</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input
+                                    type="radio"
+                                    name="helpfulness"
+                                    value="not_helpful"
+                                    class="form-radio text-indigo-600"
+                                />
+                                <span id="survey-helpful-option3" class="ml-2 text-gray-700">Not Helpful</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Topics Question -->
+                    <div>
+                        <label for="topics" id="survey-topics-label" class="block text-gray-800 font-semibold mb-2">
+                            What other digital literacy topics would you like to see covered or expanded?
+                        </label>
+                        <input
+                            type="text"
+                            id="topics"
+                            name="topics"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-lg"
+                            placeholder="e.g., Cyberbullying prevention, media bias detection, AI safety"
+                        />
+                    </div>
+
+                    <!-- Feedback Question -->
+                    <div>
+                        <label for="feedback" id="survey-feedback-label" class="block text-gray-800 font-semibold mb-2">
+                            Do you have any other feedback or suggestions?
+                        </label>
+                        <textarea
+                            id="feedback"
+                            name="feedback"
+                            rows="4"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-lg"
+                            placeholder="Share your thoughts here..."
+                        ></textarea>
+                    </div>
+
+                    <button
+                        type="submit"
+                        id="survey-submit-btn"
+                        class="w-full px-8 py-4 rounded-full font-bold text-xl bg-indigo-600 text-white shadow-xl hover:bg-indigo-700 transition-colors transform hover:scale-105 active:scale-95"
+                    >
+                        Submit Feedback
+                    </button>
+                </form>
+            </div>
+            <div id="survey-thanks-message" class="text-center py-8 hidden">
+                <p class="text-2xl text-indigo-700 font-semibold mb-4"></p>
+                <!-- Checkmark Icon -->
+                <svg class="mx-auto mt-4 w-20 h-20 text-indigo-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-4xl text-center mt-12 p-4 text-gray-600 text-base">
+        &copy; <span id="current-year"></span> Digital Literacy & E-Safety Hub. All rights reserved.
+    </footer>
+
+    <script>
+        // JavaScript for dynamic content and interactivity
+
+        // Global state variables
+        let currentLang = 'en';
+        let surveySubmitted = false;
+        let isUnsafeOnline = true; // State for the visualizer: true is Pre-Click/Tempting, false is Post-Click/Hacked
+
+        // Language content dictionary (English, Hindi, Telugu only)
+        const translations = {
+            en: {
+                appTitle: "Digital Literacy & E-Safety Hub",
+                tagline: "Navigating the internet confidently and securely",
+                aboutTitle: "What is Digital Literacy?",
+                aboutContent: '<span class="font-bold">Digital literacy</span> transcends mere technical proficiency; it is the comprehensive capability required for thriving in the modern, connected world. It involves four key domains: <ol class="list-decimal list-inside ml-4 mt-2 space-y-2"><li><span class="font-semibold">Cognitive & Critical Skills:</span> The ability to find, evaluate, synthesize, and critically assess digital information for <span class="font-semibold">reliability, bias, and authenticity (fact-checking)</span>. This is vital for navigating complex narratives and detecting misinformation.</li><li><span class="font-semibold">Technical & Functional Skills:</span> Knowing how to effectively use hardware, software, and platforms, including essential skills like file management, cloud computing, and troubleshooting.</li><li><span class="font-semibold">Creation and Communication:</span> Using digital tools to produce original content (reports, media), collaborate with others remotely, and communicate clearly, respectfully, and ethically in online spaces.</li><li><span class="font-semibold">Safety and Citizenship:</span> Understanding digital rights, managing a positive online identity, and protecting oneself from cyber threats such as malware, phishing, and identity theft.</li></ol>Mastering these interconnected skills is essential for maximizing <span class="font-bold">economic opportunity</span> and minimizing personal risk.',
+                practicalTipsSubtitle: "Key E-Safety Practices",
+                tip1Title: "Strong Passwords & Managers",
+                tip1Content: "Utilize passwords that are <span class=\"font-semibold\">at least 12 characters long</span>, incorporating a mix of upper/lowercase letters, numbers, and symbols. Crucially, passwords must be <span class=\"font-semibold\">unique for every account</span>. Employ a high-quality <span class=\"font-semibold\">password manager</span> to handle this complexity safely.",
+                tip2Title: "Multi-Factor Authentication (MFA)",
+                tip2Content: "Always <span class=\"font-semibold\">enable MFA</span> on all sensitive services (email, banking, cryptocurrency). This ensures that even if a criminal steals your password, they still need a second verification factor (like a code from your phone) to gain access, making the account exponentially more secure.",
+                tip3Title: "Hyperlink Verification (Phishing)",
+                tip3Content: "Before clicking any link in a suspicious email or text, <span class=\"font-semibold\">hover your mouse over it</span> to view the destination URL. Check for misspellings or domains that do not match the expected sender. Never act on messages that create undue <span class=\"font-semibold\">urgency or demand immediate action</span>.",
+                tip4Title: "Software Patching and Updates",
+                tip4Content: "System and application updates are critical patches designed to close recently discovered <span class=\"font-semibold\">security vulnerabilities</span>. Ensure all operating systems (OS), browsers, and installed applications are set to update automatically to prevent hackers from exploiting known flaws.",
+                tip5Title: "Granular Privacy Control",
+                tip5Content: "Regularly review the <span class=\"font-semibold\">privacy settings</span> on social media platforms and mobile applications. Limit the audience for your posts, restrict location sharing, and minimize the amount of data accessible to third-party developers.",
+                tip6Title: "VPN Usage on Open Networks",
+                tip6Content: "Avoid performing <span class=\"font-semibold\">sensitive transactions</span> (banking, payments, logins) on unsecured public Wi-Fi networks. If you must use public Wi-Fi, ensure you are connected via a <span class=\"font-semibold\">Virtual Private Network (VPN)</span> to encrypt your traffic and prevent eavesdropping.",
+                tip7Title: "Verify Information (Fact-Checking)",
+                tip7Content: "Actively work to detect <span class=\"font-semibold\">misinformation and fake news</span>. Cross-reference information across multiple, diverse, and reputable sources. Look beyond sensational headlines and always confirm the publisher’s credibility before sharing content.",
+                // UPDATED CONTENT HERE
+                whyMatterTitle: "Why Online Safety is Paramount",
+                whyMatterContent: 'Online safety is fundamental to maintaining personal <span class="font-bold">digital wellness and resilience</span>. By taking proactive measures, we safeguard our most valuable assets. The benefits of strong digital defense include: <ol class="list-decimal list-inside ml-4 mt-2 space-y-2"><li><span class="font-semibold">Preserving Financial Security:</span> Preventing unauthorized access to banking, investment, and payment platforms, ensuring your hard-earned assets remain protected from sophisticated cyber theft.</li><li><span class="font-semibold">Maintaining Personal Integrity:</span> Protecting your public and private data from breaches, which is crucial for controlling your professional reputation and preventing identity misuse.</li><li><span class="font-semibold">Enhancing Digital Freedom:</span> Reducing the anxiety and fear associated with online activities, allowing you to engage with digital tools, commerce, and communication confidently and productively.</li></ol>Proactive safety measures transform the digital world from a risky environment into an <span class="font-bold">empowering and trustworthy space</span>.',
+                // END UPDATED CONTENT
+                sustainabilityTitle: "Managing Your Digital Footprint",
+                sustainabilityContent1: 'Your <span class="font-bold">digital footprint</span> is the permanent data trail left by your online activities, encompassing everything from social media interactions to location data collected passively by apps. It is categorized into the <span class="font-semibold">Passive Footprint</span> (data gathered without direct consent, such as browsing history and IP addresses) and the <span class="font-semibold">Active Footprint</span> (information you intentionally share, like posts and comments).',
+                sustainabilityContent2: 'Effective footprint management is a form of <span class="font-bold">long-term reputation control</span>. Strategies involve exercising caution before sharing, regularly auditing and deleting old, outdated, or potentially embarrassing content, and configuring all privacy settings to the highest necessary level. <span class="font-semibold">Assume all content is permanent</span> and searchable by future employers or institutions.',
+                impactConventionalTitle: "Common Online Threats: A Deep Dive",
+                impactConventionalContent1: 'These are highly effective, non-technical attacks where criminals manipulate victims into performing an action (clicking a link, sharing credentials). Phishing emails often exploit <span class="font-semibold">human emotions</span> such as greed (fake prize) or fear (account suspension notice). <span class="font-semibold">Vigilant scrutiny</span> of the sender’s address and tone is your primary defense.',
+                impactConventionalContent2: 'Malware is umbrella term for malicious software intended to damage or disable a system. A dangerous subset is <span class="font-semibold">Ransomware</span>, which encrypts your crucial files or entire system, demanding a payment (often in cryptocurrency) for the decryption key. Protection relies on consistent software updates, reputable antivirus protection, and <span class="font-semibold">frequent, disconnected data backups</span>.',
+                impactConventionalContent3: 'Identity theft is facilitated by <span class="font-semibold">Data Breaches</span>, where large volumes of consumer data (PII: personal identifying information) are stolen from corporate servers. Using the same password across multiple sites ensures that a breach at one service compromises all your accounts. <span class="font-semibold">Unique passwords</span> and <span class="font-semibold">credit monitoring</span> are essential mitigations.',
+                visualizerTitle: "Visualize the Phishing Trap",
+                visualizerInstruction: "Watch the scenario: Observe what happens when you <span class=\"font-bold\">click the tempting link</span>!",
+                visualizerButtonUnsafe: "Click the Link!", 
+                visualizerButtonSecure: "Reset Simulation", 
+                shareIdeaTitle: "Share Your Digital Safety Tip!",
+                shareIdeaInstruction: "Have a great tip for online safety or digital literacy? Share it with the community!",
+                ideaLabel: "Your Expert Tip:",
+                ideaPlaceholder: "e.g., Use unique passwords for social media and banking, and never save card info in the browser.",
+                ideaNameLabel: "Your Name (Optional):",
+                ideaNamePlaceholder: "Anonymous",
+                submitIdeaBtn: "Submit Tip",
+                ideasSharedTitle: "Tips Shared by the Community:",
+                noIdeasYet: "No tips shared yet. Be the first!",
+                languageSelector: "Select Language:",
+                surveyTitle: "Community Feedback Survey",
+                surveyInstructions: "We value your input! Please take a moment to answer a few questions about this toolkit.",
+                surveyNameLabel: "Your Name (Optional)",
+                surveyNamePlaceholder: "John Doe",
+                surveyPlaceLabel: "Your City/Town (Optional)",
+                surveyPlacePlaceholder: "Hyderabad",
+                surveyHelpfulness: "How helpful was this toolkit in increasing your awareness about online safety?",
+                surveyHelpfulOption1: "Very Helpful",
+                surveyHelpfulOption2: "Somewhat Helpful",
+                surveyHelpfulOption3: "Not Helpful",
+                surveyTopics: "What other digital literacy topics would you like to see covered or expanded?",
+                surveyFeedback: "Do you have any other feedback or suggestions?",
+                surveySubmit: "Submit Feedback",
+                surveyThanks: "Thank you for your valuable feedback! Your input helps us improve."
+            },
+            hi: { // Hindi translations - Adjusted for the new content structure
+                appTitle: "डिजिटल साक्षरता और ई-सुरक्षा केंद्र",
+                tagline: "इंटरनेट को आत्मविश्वास और सुरक्षा के साथ नेविगेट करना",
+                aboutTitle: "डिजिटल साक्षरता क्या है?",
+                aboutContent: '<span class="font-bold">डिजिटल साक्षरता</span> केवल तकनीकी प्रवीणता से कहीं अधिक है; यह आधुनिक, जुड़े हुए विश्व में सफल होने के लिए आवश्यक व्यापक क्षमता है। इसमें चार मुख्य क्षेत्र शामिल हैं: <ol class="list-decimal list-inside ml-4 mt-2 space-y-2"><li><span class="font-semibold">संज्ञानात्मक और आलोचनात्मक कौशल:</span> विश्वसनीयता, पूर्वाग्रह और प्रामाणिकता (<span class="font-semibold">तथ्य-जाँच</span>) के लिए डिजिटल जानकारी को खोजने, मूल्यांकन करने, संश्लेषित करने और आलोचनात्मक रूप से आकलन करने की क्षमता। यह जटिल आख्यानों को नेविगेट करने और गलत सूचना का पता लगाने के लिए महत्वपूर्ण है।</li><li><span class="font-semibold">तकनीकी और कार्यात्मक कौशल:</span> हार्डवेयर, सॉफ़्टवेयर और प्लेटफार्मों का प्रभावी ढंग से उपयोग करना जानना, जिसमें फ़ाइल प्रबंधन, क्लाउड कंप्यूटिंग और समस्या निवारण जैसे आवश्यक कौशल शामिल हैं।</li><li><span class="font-semibold">निर्माण और संचार:</span> मूल सामग्री (रिपोर्ट, मीडिया) का उत्पादन करने, दूसरों के साथ दूर से सहयोग करने और ऑनलाइन स्थानों में स्पष्ट रूप से, सम्मानपूर्वक और नैतिक रूप से संवाद करने के लिए डिजिटल उपकरणों का उपयोग करना।</li><li><span class="font-semibold">सुरक्षा और नागरिकता:</span> डिजिटल अधिकारों को समझना, एक सकारात्मक ऑनलाइन पहचान का प्रबंधन करना और मैलवेयर, फ़िशिंग और पहचान की चोरी जैसे साइबर खतरों से खुद को बचाना।</li></ol>इन परस्पर जुड़े कौशलों में महारत हासिल करना <span class="font-bold">आर्थिक अवसर</span> को अधिकतम करने और व्यक्तिगत जोखिम को कम करने के लिए आवश्यक है।',
+                practicalTipsSubtitle: "मुख्य ई-सुरक्षा अभ्यास",
+                tip1Title: "मजबूत पासवर्ड और प्रबंधक",
+                tip1Content: "कम से कम <span class=\"font-semibold\">12 वर्णों के लंबे</span>, अपर/लोअरकेस अक्षरों, संख्याओं और प्रतीकों के मिश्रण वाले पासवर्ड का उपयोग करें। महत्वपूर्ण रूप से, पासवर्ड प्रत्येक खाते के लिए <span class=\"font-semibold\">अद्वितीय</span> होने चाहिए। इस जटिलता को सुरक्षित रूप से संभालने के लिए एक उच्च गुणवत्ता वाले <span class=\"font-semibold\">पासवर्ड मैनेजर</span> का उपयोग करें।",
+                tip2Title: "बहु-कारक प्रमाणीकरण (MFA)",
+                tip2Content: "सभी संवेदनशील सेवाओं (ईमेल, बैंकिंग, क्रिप्टोक्यूरेंसी) पर हमेशा <span class=\"font-semibold\">MFA सक्षम करें</span>। यह सुनिश्चित करता है कि यदि कोई अपराधी आपका पासवर्ड चुरा भी लेता है, तो भी उन्हें एक्सेस प्राप्त करने के लिए दूसरे सत्यापन कारक (जैसे आपके फोन से एक कोड) की आवश्यकता होगी, जिससे खाता अत्यधिक सुरक्षित हो जाएगा।",
+                tip3Title: "हाइपरलिंक सत्यापन (फ़िशिंग)",
+                tip3Content: "संदिग्ध ईमेल या टेक्स्ट में किसी भी लिंक पर क्लिक करने से पहले, गंतव्य URL देखने के लिए <span class=\"font-semibold\">अपने माउस को उस पर ले जाएं</span>। वर्तनी की गलतियों या ऐसे डोमेन की जाँच करें जो अपेक्षित प्रेषक से मेल नहीं खाते हैं। ऐसे संदेशों पर कभी भी कार्य न करें जो अनुचित <span class=\"font-semibold\">तत्काल या तत्काल कार्रवाई की मांग</span> करते हैं।",
+                tip4Title: "सॉफ़्टवेयर पैचिंग और अपडेट",
+                tip4Content: "सिस्टम और एप्लिकेशन अपडेट महत्वपूर्ण पैच हैं जिन्हें हाल ही में खोजी गई <span class=\"font-semibold\">सुरक्षा कमजोरियों</span> को बंद करने के लिए डिज़ाइन किया गया है। हैकर्स को ज्ञात खामियों का फायदा उठाने से रोकने के लिए सभी ऑपरेटिंग सिस्टम (OS), ब्राउज़र और इंस्टॉल किए गए एप्लिकेशन को स्वचालित रूप से अपडेट करने के लिए सेट करें।",
+                tip5Title: "दानेदार गोपनीयता नियंत्रण",
+                tip5Content: "सोशल मीडिया प्लेटफार्मों और मोबाइल एप्लिकेशन पर <span class=\"font-semibold\">गोपनीयता सेटिंग्स</span> की नियमित रूप से समीक्षा करें। अपनी पोस्ट के दर्शकों को सीमित करें, स्थान साझाकरण को प्रतिबंधित करें, और तीसरे पक्ष के डेवलपर्स के लिए सुलभ डेटा की मात्रा को कम करें।",
+                tip6Title: "खुले नेटवर्क पर वीपीएन का उपयोग",
+                tip6Content: "असुरक्षित सार्वजनिक वाई-फाई नेटवर्क पर <span class=\"font-semibold\">संवेदनशील लेनदेन</span> (बैंकिंग, भुगतान, लॉगिन) करने से बचें। यदि आपको सार्वजनिक वाई-फाई का उपयोग करना है, तो सुनिश्चित करें कि आप अपने ट्रैफ़िक को एन्क्रिप्ट करने और छिपकर बातें सुनने से रोकने के लिए एक <span class=\"font-semibold\">वर्चुअल प्राइवेट नेटवर्क (VPN)</span> के माध्यम से जुड़े हुए हैं।",
+                tip7Title: "जानकारी सत्यापित करें (तथ्य-जाँच)",
+                tip7Content: "<span class=\"font-semibold\">गलत सूचना और फर्जी खबरों</span> का पता लगाने के लिए सक्रिय रूप से काम करें। कई, विविध और प्रतिष्ठित स्रोतों में जानकारी को क्रॉस-रेफरेंस करें। सनसनीखेज सुर्खियों से परे देखें और साझा करने से पहले हमेशा प्रकाशक की विश्वसनीयता की पुष्टि करें।",
+                // UPDATED CONTENT HERE
+                whyMatterTitle: "ऑनलाइन सुरक्षा क्यों सर्वोपरि है",
+                whyMatterContent: 'ऑनलाइन सुरक्षा व्यक्तिगत <span class="font-bold">डिजिटल कल्याण और लचीलापन</span> बनाए रखने के लिए मौलिक है। सक्रिय उपाय करके, हम अपनी सबसे मूल्यवान संपत्तियों की रक्षा करते हैं। मजबूत डिजिटल सुरक्षा के लाभों में शामिल हैं: <ol class="list-decimal list-inside ml-4 mt-2 space-y-2"><li><span class="font-semibold">वित्तीय सुरक्षा का संरक्षण:</span> बैंकिंग, निवेश और भुगतान प्लेटफार्मों तक अनधिकृत पहुंच को रोकना, यह सुनिश्चित करना कि आपकी मेहनत की कमाई वाली संपत्ति परिष्कृत साइबर चोरी से सुरक्षित रहे।</li><li><span class="font-semibold">व्यक्तिगत अखंडता बनाए रखना:</span> उल्लंघन से अपने सार्वजनिक और निजी डेटा की रक्षा करना, जो आपकी पेशेवर प्रतिष्ठा को नियंत्रित करने और पहचान के दुरुपयोग को रोकने के लिए महत्वपूर्ण है।</li><li><span class="font-semibold">डिजिटल स्वतंत्रता बढ़ाना:</span> ऑनलाइन गतिविधियों से जुड़े चिंता और डर को कम करना, जिससे आप आत्मविश्वास और उत्पादक रूप से डिजिटल उपकरणों, वाणिज्य और संचार में संलग्न हो सकें।</li></ol>सक्रिय सुरक्षा उपाय डिजिटल दुनिया को एक जोखिम भरे वातावरण से एक <span class="font-bold">सशक्तिकरण और भरोसेमंद स्थान</span> में बदल देते हैं।',
+                // END UPDATED CONTENT
+                sustainabilityTitle: "अपने डिजिटल पदचिह्न का प्रबंधन",
+                sustainabilityContent1: 'आपका <span class="font-bold">डिजिटल पदचिह्न</span> आपकी ऑनलाइन गतिविधियों द्वारा छोड़ा गया स्थायी डेटा ट्रेल है, जिसमें सोशल मीडिया इंटरैक्शन से लेकर ऐप्स द्वारा निष्क्रिय रूप से एकत्र किए गए स्थान डेटा तक सब कुछ शामिल है। इसे <span class="font-semibold">निष्क्रिय पदचिह्न</span> (सीधी सहमति के बिना एकत्र किया गया डेटा, जैसे ब्राउज़िंग इतिहास और IP पते) और <span class="font-semibold">सक्रिय पदचिह्न</span> (जानकारी जिसे आप जानबूझकर साझा करते हैं, जैसे पोस्ट और टिप्पणियाँ) में वर्गीकृत किया गया है।',
+                sustainabilityContent2: 'इस पदचिह्न का प्रभावी प्रबंधन <span class="font-bold">दीर्घकालिक प्रतिष्ठा नियंत्रण</span> का एक रूप है। रणनीतियों में साझा करने से पहले सावधानी बरतना, पुरानी, ​​अप्रचलित, या संभावित रूप से शर्मनाक सामग्री की नियमित रूप से लेखापरीक्षा करना और हटाना, और सभी गोपनीयता सेटिंग्स को उच्चतम आवश्यक स्तर पर कॉन्फ़िगर करना शामिल है। <span class="font-semibold">मान लें कि सभी सामग्री स्थायी है</span> और भविष्य के नियोक्ताओं या संस्थानों द्वारा खोजी जा सकती है।',
+                impactConventionalTitle: "सामान्य ऑनलाइन खतरे: एक गहन अध्ययन",
+                impactConventionalContent1: 'ये अत्यधिक प्रभावी, गैर-तकनीकी हमले हैं जहां अपराधी पीड़ितों को कार्रवाई करने के लिए हेरफेर करते हैं (एक लिंक पर क्लिक करना, क्रेडेंशियल्स साझा करना)। फ़िशिंग ईमेल अक्सर लालच (नकली पुरस्कार) या डर (खाता निलंबन नोटिस) जैसी <span class="font-semibold">मानव भावनाओं</span> का फायदा उठाते हैं। प्रेषक के पते और लहजे की <span class="font-semibold">सतर्क जाँच</span> आपकी प्राथमिक सुरक्षा है।',
+                impactConventionalContent2: '<span class="font-semibold">मैलवेयर</span> दुर्भावनापूर्ण सॉफ़्टवेयर के लिए एक व्यापक शब्द है जिसका उद्देश्य किसी सिस्टम को नुकसान पहुंचाना या अक्षम करना है। एक खतरनाक उपसमूह <span class="font-semibold">रैंसमवेयर</span> है, जो आपकी महत्वपूर्ण फ़ाइलों या पूरे सिस्टम को एन्क्रिप्ट करता है, डिक्रिप्शन कुंजी के लिए भुगतान (अक्सर क्रिप्टोक्यूरेंसी में) की मांग करता है। सुरक्षा लगातार सॉफ़्टवेयर अपडेट, प्रतिष्ठित एंटीवायरस सुरक्षा, और <span class="font-semibold">अक्सर, डिस्कनेक्ट किए गए डेटा बैकअप</span> पर निर्भर करती है।',
+                impactConventionalContent3: '<span class="font-semibold">पहचान की चोरी</span> <span class="font-semibold">डेटा उल्लंघनों</span> द्वारा सुगम होती है, जहां बड़ी मात्रा में उपभोक्ता डेटा (PII: व्यक्तिगत पहचान जानकारी) कॉर्पोरेट सर्वर से चुराया जाता है। कई साइटों पर एक ही पासवर्ड का उपयोग यह सुनिश्चित करता है कि एक सेवा में उल्लंघन आपके सभी खातों से समझौता करता है। <span class="font-semibold">अद्वितीय पासवर्ड</span> और <span class="font-semibold">क्रेडिट निगरानी</span> आवश्यक शमन हैं।',
+                visualizerTitle: "फ़िशिंग जाल की कल्पना करें",
+                visualizerInstruction: "परिदृश्य देखें: जब आप <span class=\"font-bold\">लुभावना लिंक क्लिक</span> करते हैं तो क्या होता है!",
+                visualizerButtonUnsafe: "लिंक पर क्लिक करें!",
+                visualizerButtonSecure: "सिमुलेशन रीसेट करें",
+                shareIdeaTitle: "अपना डिजिटल सुरक्षा टिप साझा करें!",
+                shareIdeaInstruction: "आपके पास ऑनलाइन सुरक्षा या डिजिटल साक्षरता के लिए कोई शानदार टिप है? इसे समुदाय के साथ साझा करें!",
+                ideaLabel: "आपका विशेषज्ञ टिप:",
+                ideaPlaceholder: "उदाहरण के लिए, सोशल मीडिया और बैंकिंग के लिए अद्वितीय पासवर्ड का उपयोग करें, और ब्राउज़र में कार्ड जानकारी को कभी भी सहेजें नहीं।",
+                ideaNameLabel: "आपका नाम (वैकल्पिक):",
+                ideaNamePlaceholder: "अज्ञात",
+                submitIdeaBtn: "टिप जमा करें",
+                ideasSharedTitle: "समुदाय द्वारा साझा किए गए टिप्स:",
+                noIdeasYet: "अभी तक कोई टिप साझा नहीं किया गया है। पहले बनें!",
+                languageSelector: "भाषा का चयन करें:",
+                surveyTitle: "सामुदायिक प्रतिक्रिया सर्वेक्षण",
+                surveyInstructions: "हम आपके इनपुट को महत्व देते हैं! कृपया इस टूलकिट के बारे में कुछ प्रश्नों के उत्तर देने के लिए कुछ समय निकालें।",
+                surveyNameLabel: "आपका नाम (वैकल्पिक)",
+                surveyNamePlaceholder: "जॉन डो",
+                surveyPlaceLabel: "आपका शहर/कस्बा (वैकल्पिक)",
+                surveyPlacePlaceholder: "हैदराबाद",
+                surveyHelpfulness: "ऑनलाइन सुरक्षा के बारे में आपकी जागरूकता बढ़ाने में यह टूलकिट कितना सहायक था?",
+                surveyHelpfulOption1: "बहुत सहायक",
+                surveyHelpfulOption2: "कुछ हद तक सहायक",
+                surveyHelpfulOption3: "सहायक नहीं",
+                surveyTopics: "आप किन अन्य डिजिटल साक्षरता विषयों को शामिल या विस्तारित देखना चाहेंगे?",
+                surveyFeedback: "क्या आपके पास कोई अन्य प्रतिक्रिया या सुझाव है?",
+                surveySubmit: "प्रतिक्रिया जमा करें",
+                surveyThanks: "आपकी बहुमूल्य प्रतिक्रिया के लिए धन्यवाद! आपका इनपुट हमें सुधार करने में मदद करता है।"
+            },
+            te: { // Telugu translations - Adjusted for the new content structure
+                appTitle: "డిజిటల్ అక్షరాస్యత & ఇ-భద్రతా కేంద్రం",
+                tagline: "నమ్మకంగా మరియు సురక్షితంగా ఇంటర్నెట్‌ను ఉపయోగించడం",
+                aboutTitle: "డిజిటల్ అక్షరాస్యత అంటే ఏమిటి?",
+                aboutContent: '<span class="font-bold">డిజిటల్ అక్షరాస్యత</span> కేవలం సాంకేతిక సామర్థ్యం కంటే ఎక్కువ; ఇది ఆధునిక, అనుసంధానించబడిన ప్రపంచంలో అభివృద్ధి చెందడానికి అవసరమైన సమగ్ర సామర్థ్యం. ఇది నాలుగు ముఖ్య డొమైన్‌లను కలిగి ఉంటుంది: <ol class="list-decimal list-inside ml-4 mt-2 space-y-2"><li><span class="font-semibold">జ్ఞానపరమైన & క్రిటికల్ నైపుణ్యాలు:</span> <span class="font-semibold">విశ్వసనీయత, పక్షపాతం మరియు ప్రామాణికత (నిజ-తనిఖీ)</span> కోసం డిజిటల్ సమాచారాన్ని కనుగొనడం, మూల్యాంకనం చేయడం, సంశ్లేషణ చేయడం మరియు విమర్శనాత్మకంగా అంచనా వేయగల సామర్థ్యం. సంక్లిష్ట కథనాలను నావిగేట్ చేయడానికి మరియు తప్పుడు సమాచారాన్ని గుర్తించడానికి ఇది చాలా ముఖ్యమైనది.</li><li><span class="font-semibold">సాంకేతిక & ఫంక్షనల్ నైపుణ్యాలు:</span> ఫైల్ నిర్వహణ, క్లౌడ్ కంప్యూటింగ్ మరియు ట్రబుల్‌షూటింగ్ వంటి ముఖ్యమైన నైపుణ్యాలతో సహా హార్డ్‌వేర్, సాఫ్ట్‌వేర్ మరియు ప్లాట్‌ఫారమ్‌లను సమర్థవంతంగా ఉపయోగించడం తెలుసుకోవడం.</li><li><span class="font-semibold">సృష్టి మరియు కమ్యూనికేషన్:</span> ఒరిజినల్ కంటెంట్ (నివేదికలు, మీడియా) ను ఉత్పత్తి చేయడానికి, ఇతరులతో రిమోట్‌గా సహకరించడానికి మరియు ఆన్‌లైన్ స్థలాలలో స్పష్టంగా, గౌరవంగా మరియు నైతికంగా కమ్యూనికేట్ చేయడానికి డిజిటల్ సాధనాలను ఉపయోగించడం.</li><li><span class="font-semibold">భద్రత మరియు పౌరసత్వం:</span> డిజిటల్ హక్కులను అర్థం చేసుకోవడం, సానుకూల ఆన్‌లైన్ గుర్తింపును నిర్వహించడం మరియు మాల్వేర్, ఫిషింగ్ మరియు గుర్తింపు దొంగతనం వంటి సైబర్ బెదిరింపుల నుండి తమను తాము రక్షించుకోవడం.</li></ol>ఈ పరస్పరం అనుసంధానించబడిన నైపుణ్యాలను నేర్చుకోవడం <span class="font-bold">ఆర్థిక అవకాశాన్ని</span> గరిష్టం చేయడానికి మరియు వ్యక్తిగత నష్టాన్ని తగ్గించడానికి అవసరం.',
+                practicalTipsSubtitle: "ముఖ్య ఇ-భద్రతా పద్ధతులు",
+                tip1Title: "బలమైన పాస్‌వర్డ్‌లు & నిర్వాహకులు",
+                tip1Content: "కనీసం <span class=\"font-semibold\">12 అక్షరాల పొడవు</span> ఉన్న, అప్పర్/లోవర్‌కేస్ అక్షరాలు, సంఖ్యలు మరియు చిహ్నాల మిశ్రమాన్ని కలిగి ఉన్న పాస్‌వర్డ్‌లను ఉపయోగించండి. కీలకమైనది, పాస్‌వర్డ్‌లు ప్రతి ఖాతాకు <span class=\"font-semibold\">ప్రత్యేకమైనవి</span>గా ఉండాలి. ఈ సంక్లిష్టతను సురక్షితంగా నిర్వహించడానికి అధిక-నాణ్యత గల <span class=\"font-semibold\">పాస్‌వర్డ్ మేనేజర్‌ను</span> ఉపయోగించండి.",
+                tip2Title: "బహుళ-కారకాల ప్రమాణీకరణ (MFA)",
+                tip2Content: "అన్ని సున్నితమైన సేవల్లో (ఇమెయిల్, బ్యాంకింగ్, క్రిప్టోకరెన్సీ) ఎల్లప్పుడూ <span class=\"font-semibold\">MFAను ఎనేబుల్ చేయండి</span>. ఇది ఒక క్రిమినల్ మీ పాస్‌వర్డ్‌ను దొంగిలించినప్పటికీ, వారికి యాక్సెస్ పొందడానికి రెండవ ధృవీకరణ కారకం (మీ ఫోన్ నుండి కోడ్ వంటిది) అవసరం అని నిర్ధారిస్తుంది, ఖాతాను అనూహ్యంగా సురక్షితంగా చేస్తుంది.",
+                tip3Title: "హైపర్లింక్ ధృవీకరణ (ఫిషింగ్)",
+                tip3Content: "ఒక అనుమానాస్పద ఇమెయిల్ లేదా టెక్స్ట్‌లో ఏదైనా లింక్‌పై క్లిక్ చేసే ముందు, గమ్యస్థాన URL ను చూడటానికి <span class=\"font-semibold\">దానిపై మీ మౌస్‌ను హోవర్ చేయండి</span>. అక్షర దోషాలు లేదా ఆశించిన పంపేవారికి సరిపోలని డొమైన్‌ల కోసం తనిఖీ చేయండి. అన్యాయమైన <span class=\"font-semibold\">అత్యవసరతను లేదా తక్షణ చర్యను</span> డిమాండ్ చేసే సందేశాలపై ఎప్పుడూ చర్య తీసుకోకండి.",
+                tip4Title: "సాఫ్ట్‌వేర్ ప్యాచ్‌లు మరియు అప్‌డేట్‌లు",
+                tip4Content: "సిస్టమ్ మరియు అప్లికేషన్ అప్‌డేట్‌లు ఇటీవల కనుగొనబడిన <span class=\"font-semibold\">భద్రతా లోపాలను</span> మూసివేయడానికి రూపొందించబడిన కీలకమైన ప్యాచ్‌లు. హ్యాకర్లు తెలిసిన లోపాలను ఉపయోగించకుండా నిరోధించడానికి అన్ని ఆపరేటింగ్ సిస్టమ్‌లు (OS), బ్రౌజర్‌లు మరియు ఇన్‌స్టాల్ చేయబడిన అప్లికేషన్‌లు స్వయంచాలకంగా అప్‌డేట్ అయ్యేలా సెట్ చేయండి.",
+                tip5Title: "గ్రెన్యులర్ గోప్యతా నియంత్రణ",
+                tip5Content: "సోషల్ మీడియా ప్లాట్‌ఫారమ్‌లు మరియు మొబైల్ అప్లికేషన్‌లలో <span class=\"font-semibold\">గోప్యతా సెట్టింగ్‌లను</span> క్రమం తప్పకుండా సమీక్షించండి. మీ పోస్ట్‌ల ప్రేక్షకులను పరిమితం చేయండి, స్థాన భాగస్వామ్యాన్ని పరిమితం చేయండి మరియు మూడవ పక్షం డెవలపర్‌లకు అందుబాటులో ఉన్న డేటా మొత్తాన్ని తగ్గించండి.",
+                tip6Title: "ఓపెన్ నెట్‌వర్క్‌లలో VPN వినియోగం",
+                tip6Content: "అసురక్షిత పబ్లిక్ Wi-Fi నెట్‌వర్క్‌లలో <span class=\"font-semibold\">సున్నితమైన లావాదేవీలను</span> (బ్యాంకింగ్, చెల్లింపులు, లాగిన్‌లు) నిర్వహించడం మానుకోండి. మీరు పబ్లిక్ Wi-Fi ని ఉపయోగించాల్సి వస్తే, మీ ట్రాఫిక్‌ను గుప్తీకరించడానికి మరియు దొంగిలించడం నిరోధించడానికి <span class=\"font-semibold\">వర్చువల్ ప్రైవేట్ నెట్‌వర్క్ (VPN)</span> ద్వారా కనెక్ట్ అయ్యారని నిర్ధారించుకోండి.",
+                tip7Title: "సమాచారాన్ని ధృవీకరించండి (నిజ-తనిఖీ)",
+                tip7Content: "<span class=\"font-semibold\">తప్పుడు సమాచారం మరియు నకిలీ వార్తలను</span> గుర్తించడానికి చురుకుగా కృషి చేయండి. బహుళ, విభిన్న మరియు ప్రసిద్ధ మూలాల్లో సమాచారాన్ని క్రాస్-రిఫరెన్స్ చేయండి. సంచలనాత్మక శీర్షికలకు మించి చూడండి మరియు భాగస్వామ్యం చేయడానికి ముందు ఎల్లప్పుడూ ప్రచురణకర్త యొక్క విశ్వసనీయతను ధృవీకరించండి।",
+                // UPDATED CONTENT HERE
+                whyMatterTitle: "ఆన్‌లైన్ భద్రత ఎందుకు సర్వోన్నతం",
+                whyMatterContent: 'ఆన్‌లైన్ భద్రత వ్యక్తిగత <span class="font-bold">డిజిటల్ ఆరోగ్యం మరియు స్థితిస్థాపకతను</span> నిర్వహించడానికి ప్రాథమికమైనది. చురుకైన చర్యలు తీసుకోవడం ద్వారా, మేము మా అత్యంత విలువైన ఆస్తులను రక్షిస్తాము. బలమైన డిజిటల్ రక్షణ యొక్క ప్రయోజనాలు: <ol class="list-decimal list-inside ml-4 mt-2 space-y-2"><li><span class="font-semibold">ఆర్థిక భద్రతను కాపాడటం:</span> బ్యాంకింగ్, పెట్టుబడి మరియు చెల్లింపు ప్లాట్‌ఫారమ్‌లకు అనధికార ప్రాప్యతను నిరోధించడం, మీ కష్టపడి సంపాదించిన ఆస్తులు అధునాతన సైబర్ దొంగతనం నుండి రక్షించబడుతున్నాయని నిర్ధారించడం.</li><li><span class="font-semibold">వ్యక్తిగత సమగ్రతను నిర్వహించడం:</span> ఉల్లంఘనల నుండి మీ బహిరంగ మరియు ప్రైవేట్ డేటాను రక్షించడం, ఇది మీ వృత్తిపరమైన కీర్తిని నియంత్రించడానికి మరియు గుర్తింపు దుర్వినియోగాన్ని నిరోధించడానికి చాలా ముఖ్యమైనది.</li><li><span class="font-semibold">డిజిటల్ స్వేచ్ఛను పెంచడం:</span> ఆన్‌లైన్ కార్యకలాపాలతో సంబంధం ఉన్న ఆందోళన మరియు భయాన్ని తగ్గించడం, డిజిటల్ సాధనాలు, వాణిజ్యం మరియు కమ్యూనికేషన్‌లో నమ్మకంగా మరియు ఉత్పాదకంగా పాల్గొనడానికి మిమ్మల్ని అనుమతిస్తుంది.</li></ol>ముందస్తు భద్రతా చర్యలు డిజిటల్ ప్రపంచాన్ని ప్రమాదకర వాతావరణం నుండి <span class="font-bold">సామర్థ్యాన్ని పెంచే మరియు నమ్మదగిన స్థలంగా</span> మారుస్తాయి.',
+                // END UPDATED CONTENT
+                sustainabilityTitle: "మీ డిజిటల్ పాదముద్రను నిర్వహించడం",
+                sustainabilityContent1: 'మీ <span class="font-bold">డిజిటల్ పాదముద్ర</span> అనేది మీ ఆన్‌లైన్ కార్యకలాపాల ద్వారా మిగిలిపోయిన శాశ్వత డేటా ట్రయిల్, ఇది సోషల్ మీడియా పరస్పర చర్యల నుండి అనువర్తనాల ద్వారా నిష్క్రియాత్మకంగా సేకరించబడిన స్థాన డేటా వరకు ప్రతిదీ కలిగి ఉంటుంది. ఇది <span class="font-semibold">నిష్క్రియాత్మక పాదముద్ర</span> (ప్రత్యక్ష సమ్మతి లేకుండా సేకరించబడిన డేటా, బ్రౌజింగ్ చరిత్ర మరియు IP చిరునామాలు వంటివి) మరియు <span class="font-semibold">చురుకైన పాదముద్ర</span> (మీరు ఉద్దేశపూర్వకంగా పంచుకునే సమాచారం, పోస్ట్‌లు మరియు వ్యాఖ్యలు వంటివి) గా వర్గీకరించబడింది।',
+                sustainabilityContent2: 'ఈ పాదముద్రను సమర్థవంతంగా నిర్వహించడం <span class="font-bold">దీర్ఘకాలిక కీర్తి నియంత్రణలో</span> ఒక రూపం. వ్యూహాలలో భాగస్వామ్యం చేయడానికి ముందు జాగ్రత్త వహించడం, పాత, కాలం చెల్లిన లేదా సంభావ్యంగా ఇబ్బందికరమైన కంటెంట్‌ను క్రమం తప్పకుండా ఆడిట్ చేయడం మరియు తొలగించడం మరియు అన్ని గోప్యతా సెట్టింగ్‌లను అత్యధిక అవసరమైన స్థాయికి కాన్ఫిగర్ చేయడం వంటివి ఉంటాయి. <span class="font-semibold">అన్ని కంటెంట్ శాశ్వతమైనదని</span> మరియు భవిష్యత్ యజమానులు లేదా సంస్థల ద్వారా శోధించదగినదని <span class="font-semibold">ఊహించండి</span>।',
+                impactConventionalTitle: "సాధారణ ఆన్‌లైన్ బెదిరింపులు: ఒక లోతైన అధ్యయనం",
+                impactConventionalContent1: 'ఇవి చాలా ప్రభావవంతమైన, సాంకేతికేతర దాడులు, ఇక్కడ నేరస్థులు బాధితులను ఒక చర్య చేయడానికి మారుస్తారు (ఒక లింక్‌ను క్లిక్ చేయడం, ఆధారాలను పంచుకోవడం). ఫిషింగ్ ఇమెయిల్‌లు తరచుగా దురాశ (నకిలీ బహుమతి) లేదా భయం (ఖాతా సస్పెన్షన్ నోటీసు) వంటి <span class="font-semibold">మానవ భావోద్వేగాలను</span> ఉపయోగించుకుంటాయి. పంపేవారి చిరునామా మరియు స్వరం యొక్క <span class="font-semibold">జాగ్రత్తగల పరిశీలన</span> మీ ప్రాథమిక రక్షణ।',
+                impactConventionalContent2: '<span class="font-semibold">మాల్వేర్</span> అనేది ఒక సిస్టమ్‌ను దెబ్బతీయడానికి లేదా నిలిపివేయడానికి ఉద్దేశించిన హానికరమైన సాఫ్ట్‌వేర్ కోసం ఒక గొడుగు పదం. ఒక ప్రమాదకరమైన ఉపసమితి <span class="font-semibold">ర్యాన్సమ్‌వేర్</span>, ఇది మీ ముఖ్యమైన ఫైల్‌లు లేదా మొత్తం సిస్టమ్‌ను గుప్తీకరిస్తుంది, డీక్రిప్షన్ కీ కోసం చెల్లింపు (తరచుగా క్రిప్టోకరెన్సీలో) డిమాండ్ చేస్తుంది. రక్షణ స్థిరమైన సాఫ్ట్‌వేర్ అప్‌డేట్‌లు, ప్రసిద్ధ యాంటీవైరస్ రక్షణ మరియు <span class="font-semibold">తరచుగా, డిస్‌కనెక్ట్ చేయబడిన డేటా బ్యాకప్‌లు</span> పై ఆధారపడి ఉంటుంది।',
+                impactConventionalContent3: '<span class="font-semibold">గుర్తింపు దొంగతనం</span> <span class="font-semibold">డేటా ఉల్లంఘనల</span> ద్వారా సులభతరం చేయబడుతుంది, ఇక్కడ పెద్ద మొత్తంలో వినియోగదారు డేటా (PII: వ్యక్తిగత గుర్తింపు సమాచారం) కార్పొరేట్ సర్వర్‌ల నుండి దొంగిలించబడుతుంది. బహుళ సైట్‌లలో ఒకే పాస్‌వర్డ్‌ను ఉపయోగించడం వలన ఒక సేవలో ఉల్లంఘన మీ అన్ని ఖాతాలను రాజీ చేస్తుంది. <span class="font-semibold">ప్రత్యేకమైన పాస్‌వర్డ్‌లు</span> మరియు <span class="font-semibold">క్రెడిట్ పర్యవేక్షణ</span> ముఖ్యమైన ఉపశమనాలు।',
+                visualizerTitle: "ఫిషింగ్ ట్రాప్‌ను దృశ్యమానం చేయండి",
+                visualizerInstruction: "దృశ్యాన్ని చూడండి: మీరు <span class=\"font-bold\">ఆకర్షణీయమైన లింక్‌ను క్లిక్ చేసినప్పుడు</span> ఏమి జరుగుతుందో గమనించండి!",
+                visualizerButtonUnsafe: "లింక్‌పై క్లిక్ చేయండి!",
+                visualizerButtonSecure: "సిమ్యులేషన్‌ను రీసెట్ చేయండి",
+                shareIdeaTitle: "మీ డిజిటల్ భద్రతా చిట్కాను పంచుకోండి!",
+                shareIdeaInstruction: "ఆన్‌లైన్ భద్రత లేదా డిజిటల్ అక్షరాస్యత కోసం మీకు గొప్ప చిట్కా ఉందా? దానిని సంఘంతో పంచుకోండి!",
+                ideaLabel: "మీ నిపుణుల చిట్కా:",
+                ideaPlaceholder: "ఉదా., సోషల్ మీడియా మరియు బ్యాంకింగ్ కోసం ప్రత్యేకమైన పాస్‌వర్డ్‌లను ఉపయోగించండి మరియు బ్రౌజర్‌లో కార్డ్ సమాచారాన్ని ఎప్పుడూ సేవ్ చేయవద్దు.",
+                ideaNameLabel: "మీ పేరు (ఐచ్ఛికం):",
+                ideaNamePlaceholder: "అజ్ఞాత",
+                submitIdeaBtn: "చిట్కాను సమర్పించండి",
+                ideasSharedTitle: "సంఘం పంచుకున్న చిట్కాలు:",
+                noIdeasYet: "ఇప్పటివరకు చిట్కాలు భాగస్వామ్యం చేయబడలేదు. మొదటివారు అవ్వండి!",
+                languageSelector: "భాషను ఎంచుకోండి:",
+                surveyTitle: "సంఘం అభిప్రాయ సర్వే",
+                surveyInstructions: "మీ అభిప్రాయాన్ని మేము విలువైనదిగా భావిస్తున్నాము! దయచేసి ఈ టూల్‌కిట్ గురించి కొన్ని ప్రశ్నలకు సమాధానం ఇవ్వడానికి కొద్ది సమయం కేటాయించండి.",
+                surveyNameLabel: "మీ పేరు (ఐచ్ఛికం)",
+                surveyNamePlaceholder: "జాన్ డో",
+                surveyPlaceLabel: "మీ నగరం/పట్టణం (ఐచ్ఛికం)",
+                surveyPlacePlaceholder: "హైదరాబాద్",
+                surveyHelpfulness: "ఆన్‌లైన్ భద్రత గురించి మీ అవగాహన పెంచడంలో ఈ టూల్‌కిట్ ఎంతవరకు సహాయపడింది?",
+                surveyHelpfulOption1: "చాలా సహాయకరంగా ఉంది",
+                surveyHelpfulOption2: "కొంత సహాయకరంగా ఉంది",
+                surveyHelpfulOption3: "సహాయకరంగా లేదు",
+                surveyTopics: "డిజిటల్ అక్షరాస్యత గురించి మీరు ఇంకేమైనా అంశాలను కవర్ చేయాలని లేదా విస్తరించాలని అనుకుంటున్నారా?",
+                surveyFeedback: "మీకు ఇంకేమైనా అభిప్రాయం లేదా సూచనలు ఉన్నాయా?",
+                surveySubmit: "అభిప్రాయాన్ని సమర్పించండి",
+                surveyThanks: "మీ విలువైన అభిప్రాయానికి ధన్యవాదాలు! మీ అభిప్రాయం మాకు మెరుగుపరచడంలో సహాయపడుతుంది."
+            }
+        };
+
+        // Function to update all UI elements based on the current language
+        function updateUIForLanguage(lang) {
+            const t = translations[lang];
+
+            // --- HEADER ---
+            // Use the new dedicated span ID for the main title text
+            document.getElementById('app-title-text').textContent = t.appTitle;
+            document.getElementById('tagline').textContent = t.tagline;
+            document.getElementById('language-selector').textContent = t.languageSelector;
+
+            // --- CONTENT SECTIONS (Updated to use textContent on new Span IDs) ---
+            document.getElementById('about-title').textContent = t.aboutTitle;
+            document.getElementById('about-content').innerHTML = t.aboutContent;
+            document.getElementById('practical-tips-subtitle').textContent = t.practicalTipsSubtitle;
+
+            // Tips (No changes needed here as they use textContent correctly on h4 elements)
+            document.getElementById('tip1-title').textContent = t.tip1Title;
+            document.getElementById('tip1-content').innerHTML = t.tip1Content;
+            document.getElementById('tip2-title').textContent = t.tip2Title;
+            document.getElementById('tip2-content').innerHTML = t.tip2Content;
+            document.getElementById('tip3-title').textContent = t.tip3Title;
+            document.getElementById('tip3-content').innerHTML = t.tip3Content;
+            document.getElementById('tip4-title').textContent = t.tip4Title;
+            document.getElementById('tip4-content').innerHTML = t.tip4Content;
+            document.getElementById('tip5-title').textContent = t.tip5Title;
+            document.getElementById('tip5-content').innerHTML = t.tip5Content;
+            document.getElementById('tip6-title').textContent = t.tip6Title;
+            document.getElementById('tip6-content').innerHTML = t.tip6Content;
+            document.getElementById('tip7-title').textContent = t.tip7Title;
+            document.getElementById('tip7-content').innerHTML = t.tip7Content;
+
+            // Why Online Safety Matters
+            document.getElementById('why-matter-title').textContent = t.whyMatterTitle;
+            document.getElementById('why-matter-content').innerHTML = t.whyMatterContent; // Updated innerHTML
+
+            // Protecting Your Digital Footprint
+            document.getElementById('sustainability-title').textContent = t.sustainabilityTitle;
+            document.getElementById('sustainability-content-1').innerHTML = t.sustainabilityContent1;
+            document.getElementById('sustainability-content-2').innerHTML = t.sustainabilityContent2;
+
+            // Common Online Threats
+            document.getElementById('impact-conventional-title').textContent = t.impactConventionalTitle;
+            document.getElementById('impact-conventional-content-1').innerHTML = t.impactConventionalContent1;
+            document.getElementById('impact-conventional-content-2').innerHTML = t.impactConventionalContent2;
+            document.getElementById('impact-conventional-content-3').innerHTML = t.impactConventionalContent3;
+
+            // Interactive Digital Safety Visualizer
+            document.getElementById('visualizer-title').textContent = t.visualizerTitle;
+            document.getElementById('visualizer-instruction').innerHTML = t.visualizerInstruction;
+            document.getElementById('toggle-visualizer-btn').textContent = isUnsafeOnline ? t.visualizerButtonUnsafe : t.visualizerButtonSecure;
+
+            // Share Your Safety Tip!
+            document.getElementById('share-idea-title').textContent = t.shareIdeaTitle;
+            document.getElementById('share-idea-instruction').textContent = t.shareIdeaInstruction;
+            document.getElementById('idea-label').textContent = t.ideaLabel;
+            document.getElementById('idea-text').placeholder = t.ideaPlaceholder;
+            document.getElementById('idea-name-label').textContent = t.ideaNameLabel;
+            document.getElementById('idea-name').placeholder = t.ideaNamePlaceholder;
+            document.getElementById('submit-idea-btn').textContent = t.submitIdeaBtn;
+            document.getElementById('ideas-shared-title').textContent = t.ideasSharedTitle;
+            document.getElementById('no-ideas-yet').textContent = t.noIdeasYet;
+            
+            // Survey Section
+            document.getElementById('survey-title-text').textContent = t.surveyTitle;
+            document.getElementById('survey-instructions').textContent = t.surveyInstructions;
+            document.getElementById('survey-name-label').textContent = t.surveyNameLabel;
+            document.getElementById('name').placeholder = t.surveyNamePlaceholder;
+            document.getElementById('survey-place-label').textContent = t.surveyPlaceLabel;
+            document.getElementById('place').placeholder = t.surveyPlacePlaceholder;
+            document.getElementById('survey-helpfulness-label').textContent = t.surveyHelpfulness;
+            document.getElementById('survey-helpful-option1').textContent = t.surveyHelpfulOption1;
+            document.getElementById('survey-helpful-option2').textContent = t.surveyHelpfulOption2;
+            document.getElementById('survey-helpful-option3').textContent = t.surveyHelpfulOption3;
+            document.getElementById('survey-topics-label').textContent = t.surveyTopics;
+            // The placeholders are kept in English for ease if no specific translation is provided
+            document.getElementById('survey-feedback-label').textContent = t.surveyFeedback;
+            document.getElementById('survey-submit-btn').textContent = t.surveySubmit;
+            if (surveySubmitted) {
+                document.querySelector('#survey-thanks-message p').textContent = t.surveyThanks;
+            }
+
+            // Set current year in footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            updateUIForLanguage(currentLang);
+        }
+
+        // --- Interactive Safety Visualizer Logic ---
+        function toggleSafetyVisualizer() {
+            const unsafeScene = document.getElementById('unsafe-scene');
+            const hackedScene = document.getElementById('secure-scene');
+            const toggleButton = document.getElementById('toggle-visualizer-btn');
+            const visualizerContainer = document.getElementById('visualizer-container');
+            const dynamicHead = document.getElementById('dynamic-head');
+            const dynamicMouth = document.getElementById('dynamic-mouth');
+            const armGroup = document.getElementById('person-arm');
+            const hackedOverlay = document.getElementById('hacked-overlay');
+            const hackedTextMain = document.getElementById('hacked-text-main');
+            const hackedTextSub = document.getElementById('hacked-text-sub');
+
+            if (isUnsafeOnline) {
+                // HACKED STATE: Dramatic Transition
+                
+                // Hide safe UI, show hacked UI
+                unsafeScene.classList.remove('visible-element');
+                unsafeScene.classList.add('hidden-element');
+                hackedScene.classList.remove('hidden-element');
+                hackedScene.classList.add('visible-element');
+                
+                // Visualizer Container: Apply dramatic pulse/border
+                visualizerContainer.classList.add('animate-hack-pulse');
+
+                // Person: Distress
+                dynamicHead.classList.add('hacked-head');
+                dynamicMouth.setAttribute('d', 'M190 148 Q 200 143 210 148'); // Frown
+                armGroup.style.transform = 'translate(0px, 30px)'; // Arm drops
+
+                // Screen: Red Alert
+                hackedOverlay.style.opacity = '1';
+                hackedTextMain.style.opacity = '1';
+                hackedTextSub.style.opacity = '1';
+                
+                // Update button text to reset
+                toggleButton.textContent = translations[currentLang].visualizerButtonSecure;
+
+            } else {
+                // RESET STATE: Back to Tempting
+                
+                // Show safe UI, hide hacked UI
+                unsafeScene.classList.remove('hidden-element');
+                unsafeScene.classList.add('visible-element');
+                hackedScene.classList.remove('visible-element');
+                hackedScene.classList.add('hidden-element');
+
+                // Visualizer Container: Remove pulse
+                visualizerContainer.classList.remove('animate-hack-pulse');
+
+                // Person: Reset
+                dynamicHead.classList.remove('hacked-head');
+                dynamicMouth.setAttribute('d', 'M195 145 Q 200 150 205 145'); // Smile
+                armGroup.style.transform = 'translate(0px, 0px)'; // Arm reset
+
+                // Screen: Normal
+                hackedOverlay.style.opacity = '0';
+                hackedTextMain.style.opacity = '0';
+                hackedTextSub.style.opacity = '0';
+                
+                // Update button text to click the link
+                toggleButton.textContent = translations[currentLang].visualizerButtonUnsafe;
+            }
+            isUnsafeOnline = !isUnsafeOnline;
+        }
+
+
+        // --- Share Your Safety Tip! Logic ---
+        function handleIdeaSubmit(event) {
+            event.preventDefault();
+            const ideaText = document.getElementById('idea-text').value.trim();
+            const ideaName = document.getElementById('idea-name').value.trim();
+            const ideasList = document.getElementById('ideas-list');
+            const noIdeasYet = document.getElementById('no-ideas-yet');
+
+            if (ideaText) {
+                const authorName = ideaName || translations[currentLang].ideaNamePlaceholder;
+                const listItem = document.createElement('li');
+                listItem.className = 'bg-gray-50 p-4 rounded-xl shadow-sm border border-gray-200';
+                listItem.innerHTML = `<p class="text-gray-800 italic">"${ideaText}" <span class="font-semibold text-gray-600">- ${authorName}</span></p>`;
+                ideasList.prepend(listItem); // Add new tip to the top
+
+                document.getElementById('idea-form').reset(); // Reset form fields
+
+                if (!noIdeasYet.classList.contains('hidden')) {
+                    noIdeasYet.classList.add('hidden'); // Hide "No tips yet" message
+                }
+            }
+        }
+
+
+        // Handle survey form submission
+        function handleSurveySubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const surveyData = {};
+            for (let [key, value] of formData.entries()) {
+                surveyData[key] = value;
+            }
+
+            console.log("Survey Submitted:", surveyData);
+
+            surveySubmitted = true;
+            document.getElementById('survey-content-wrapper').classList.add('hidden'); // Hide the form
+            document.getElementById('survey-thanks-message').classList.remove('hidden'); // Show thank you
+            document.querySelector('#survey-thanks-message p').textContent = translations[currentLang].surveyThanks;
+        }
+
+        // Initial setup on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial UI update based on default language
+            updateUIForLanguage(currentLang);
+
+            // Set up idea form submission listener
+            document.getElementById('idea-form').addEventListener('submit', handleIdeaSubmit);
+
+            // Set up survey form submission listener
+            document.getElementById('survey-form').addEventListener('submit', handleSurveySubmit);
+            
+            // Set the initial state of the visualizer button text
+            document.getElementById('toggle-visualizer-btn').textContent = translations[currentLang].visualizerButtonUnsafe;
+        });
+
+    </script>
+</body>
+</html>
